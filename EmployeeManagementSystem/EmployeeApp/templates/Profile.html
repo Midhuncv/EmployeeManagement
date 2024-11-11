@@ -1,0 +1,193 @@
+ {% extends "base.html" %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <style>
+        .profile-container {
+          background-color: rgba(255, 255, 255, 0.9);
+          padding: 30px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .btn-edit, .btn-save, .btn-cancel {
+          margin-top: 20px;
+          font-size: 16px;
+          font-weight: bold;
+        }
+      </style>
+    <div class="container d-flex align-items-center justify-content-center" style="height: 100vh;">
+        <div class="col-md-6 profile-container">
+          <h2 class="text-center pb-3">Profile Details</h2>
+          
+          <form id="profileForm">
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" class="form-control" id="name" value="{{ user.name }}" disabled>
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+            </div>
+            <div class="form-group">
+              <label for="position">Position:</label>
+              <input type="text" class="form-control" id="position" value="{{ user.position }}" disabled>
+            </div>
+            <button type="button" class="btn btn-primary btn-edit" onclick="enableEdit()">Edit</button>
+            <button type="button" class="btn btn-success btn-save d-none" onclick="saveProfile()">Save</button>
+            <button type="button" class="btn btn-secondary btn-cancel d-none" onclick="cancelEdit()">Cancel</button>
+          </form>
+        </div>
+      </div>
+  
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+      <script>
+        function enableEdit() {
+          // Enable input fields
+          document.getElementById('name').disabled = false;
+          document.getElementById('email').disabled = false;
+          document.getElementById('position').disabled = false;
+          
+          // Show Save and Cancel buttons, hide Edit button
+          document.querySelector('.btn-edit').classList.add('d-none');
+          document.querySelector('.btn-save').classList.remove('d-none');
+          document.querySelector('.btn-cancel').classList.remove('d-none');
+        }
+  
+        function cancelEdit() {
+          // Reload the page to reset input fields
+          window.location.reload();
+        }
+  
+        function saveProfile() {
+          const name = document.getElementById('name').value;
+          const email = document.getElementById('email').value;
+          const position = document.getElementById('position').value;
+  
+          fetch('http://127.0.0.1:8000/update-profile/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: name,
+              email: email,
+              position: position
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert("Profile updated successfully!");
+              window.location.reload();
+            } else {
+              alert("Error: " + (data.error || 'Unknown error'));
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert("Failed to update profile. Please try again.");
+          });
+        }
+      </script>
+</head>
+<body>
+    {% block content %}
+
+
+
+
+    <div class="container d-flex align-items-center justify-content-center" style="height: 100vh;">
+        <div class="col-md-6 profile-container">
+          <h2 class="text-center pb-3">Profile Details</h2>
+          
+          <form id="profileForm">
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" class="form-control" id="name" value="{{ user.name }}" disabled>
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+            </div>
+            <div class="form-group">
+              <label for="position">Position:</label>
+              <input type="text" class="form-control" id="position" value="{{ user.position }}" disabled>
+            </div>
+            <button type="button" class="btn btn-primary btn-edit" onclick="enableEdit()">Edit</button>
+            <button type="button" class="btn btn-success btn-save d-none" onclick="saveProfile()">Save</button>
+            <button type="button" class="btn btn-secondary btn-cancel d-none" onclick="cancelEdit()">Cancel</button>
+          </form>
+        </div>
+      </div>
+  
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+      <script>
+        function enableEdit() {
+          // Enable input fields
+          document.getElementById('name').disabled = false;
+          document.getElementById('email').disabled = false;
+          document.getElementById('position').disabled = false;
+          
+          // Show Save and Cancel buttons, hide Edit button
+          document.querySelector('.btn-edit').classList.add('d-none');
+          document.querySelector('.btn-save').classList.remove('d-none');
+          document.querySelector('.btn-cancel').classList.remove('d-none');
+        }
+  
+        function cancelEdit() {
+          // Reload the page to reset input fields
+          window.location.reload();
+        }
+  
+        function saveProfile() {
+          const name = document.getElementById('name').value;
+          const email = document.getElementById('email').value;
+          const position = document.getElementById('position').value;
+  
+          fetch('http://127.0.0.1:8000/update-profile/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: name,
+              email: email,
+              position: position
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert("Profile updated successfully!");
+              window.location.reload();
+            } else {
+              alert("Error: " + (data.error || 'Unknown error'));
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert("Failed to update profile. Please try again.");
+          });
+        }
+      </script>
+
+    
+       
+     
+
+
+
+    {% endblock %}
+    
+</body>
+</html>
