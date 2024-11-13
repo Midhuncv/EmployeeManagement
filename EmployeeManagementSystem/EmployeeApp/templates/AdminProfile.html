@@ -261,7 +261,7 @@
                               <li class="active">
                                   
                                      
-                                      <span class="pcoded-mtext"  style="margin-left: 20px;"><a href="{% url 'EmployeeApp:Employeeprofile' %}">Dashboard</a></span>
+                                      <span class="pcoded-mtext" style="margin-left: 20px;"><a href="{% url 'EmployeeApp:Employeeprofile' %}">Dashboard</a></span>
                                       
                                   </a>
                               </li>
@@ -324,93 +324,125 @@
                                            
                                             
     
-                                            <!--  project and team member start -->
+                                            
                                             <div class="col-xl-8 col-md-12">
                                                 <div class="card table-card">
                                                     <div class="card-header">
-                                                        <h4 class="card-title">ChangePassword</h4>
+                                                        <h4 class="card-title">Profile Details</h4>
                                                     </div>
-                                                    <form id="changePasswordForm" class="p-4 shadow-sm rounded-lg bg-light">
-                                                        <h3 class="text-center mb-4">Change Password</h3>
-                                                        
-                                                        <div class="form-group mb-3">
-                                                          <label for="currentPassword" class="font-weight-bold">Current Password:</label>
-                                                          <input type="password" class="form-control form-control-lg" id="currentPassword" placeholder="Enter current password" required>
-                                                          
+                                                    <div class="card-body">
+                                                        <!-- Profile Fields -->
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p><strong>Name:</strong> <input type="text" id="profileName" class="form-control" readonly></p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p><strong>Email:</strong> <input type="text" id="profileEmail" class="form-control" readonly></p>
+                                                            </div>
+                                                            
                                                         </div>
-                                                        
-                                                        <div class="form-group mb-3">
-                                                          <label for="newPassword" class="font-weight-bold">New Password:</label>
-                                                          <input type="password" class="form-control form-control-lg" id="newPassword" placeholder="Enter new password" required>
-                                                          
+                                                        <!-- Buttons -->
+                                                        <div class="text-right mt-3">
+                                                            <button class="btn btn-primary" id="editButton" onclick="enableEdit()">Edit</button>
+                                                            <button class="btn btn-success" id="updateButton" style="display:none;" onclick="updateProfile()">Update</button>
                                                         </div>
-                                                        
-                                                        <div class="form-group mb-3">
-                                                          <label for="confirmPassword" class="font-weight-bold">Confirm New Password:</label>
-                                                          <input type="password" class="form-control form-control-lg" id="confirmPassword" placeholder="Confirm new password" required>
-                                                          
-                                                        </div>
-                                                      
-                                                        <div class="text-center mt-4">
-                                                          <button type="submit" class="btn btn-primary btn-lg px-4 py-2">Change Password</button>
-                                                        </div>
-                                                      </form>
-                                                      
+                                                    </div>
                                                 </div>
                                             </div>
-
+                                            
                                             <script>
-                                                document.getElementById('changePasswordForm').addEventListener('submit', function (event) {
-                                                    event.preventDefault();
-                                                
-                                                    const currentPassword = document.getElementById('currentPassword').value;
-                                                    const newPassword = document.getElementById('newPassword').value;
-                                                    const confirmPassword = document.getElementById('confirmPassword').value;
-                                                
-                                                    const id = localStorage.getItem('id'); // Retrieve employee ID from storage
-                                                    const accessToken = localStorage.getItem('access_token'); // Ensure the token is valid
-                                                
-                                                    console.log('Retrieved ID from localStorage:', id);
-                                                    console.log('Access Token:', accessToken);
-                                                
-                                                    if (!id) {
-                                                        alert('You are not logged in. Please log in to change your password.');
-                                                        window.location.href = '/login'; // Redirect to login page
+                                                function fetchProfile() {
+                                                    const accessToken = localStorage.getItem('access_token');
+                                                    const refreshToken = localStorage.getItem('refresh_token');
+                                            
+                                                    if (!accessToken || !refreshToken) {
+                                                        alert('Please log in to access your profile.');
                                                         return;
                                                     }
-                                                
-                                                    fetch('http://127.0.0.1:8000/ChangePasswordApi/', {
-                                                        method: 'PATCH',
+                                            
+                                                    fetch('http://127.0.0.1:8000/AdminProfileView/', {
+                                                        method: 'GET',
                                                         headers: {
-                                                            'Content-Type': 'application/json',
-                                                            'Authorization': `Bearer ${accessToken}`
-                                                        },
-                                                        body: JSON.stringify({
-                                                            id: id,
-                                                            current_password: currentPassword,
-                                                            new_password: newPassword,
-                                                            confirm_password: confirmPassword
-                                                        })
+                                                            'Authorization': 'Bearer ' + accessToken,
+                                                            'Refresh-Token': refreshToken
+                                                        }
                                                     })
-                                                    .then(response => {
-                                                        console.log('Response Status:', response.status); // Log response status
-                                                        return response.json().then(data => {
-                                                            if (response.ok) {
-                                                                console.log('Success:', data);
-                                                                alert(data.message);
-                                                                window.location.href = "/Mainlogin";
-                                                                
-                                                            } else {
-                                                                console.error('Error Data:', data);
-                                                                throw new Error(data.error || 'An error occurred.');
+                                                    .then(response => response.json())
+                                                    .then(data => {
+                                                        if (data.error) {
+                                                            alert(data.error);
+                                                            if (data.new_access_token) {
+                                                                localStorage.setItem('access_token', data.new_access_token);
+                                                                fetchProfile();
                                                             }
-                                                        });
+                                                        } else {
+                                                            document.getElementById('profileName').value = data.name;
+                                                            document.getElementById('profileEmail').value = data.email;
+                                                            
+                                                        }
                                                     })
                                                     .catch(error => {
-                                                        console.error('Fetch Error:', error);
-                                                        alert(error.message);
+                                                        console.error('Error fetching profile:', error);
                                                     });
-                                                });
+                                                }
+                                            
+                                                function enableEdit() {
+                                                    // Make fields editable
+                                                    document.getElementById('profileName').readOnly = false;
+                                                    document.getElementById('profileEmail').readOnly = false;
+                                                    
+                                            
+                                                    // Show Update button and hide Edit button
+                                                    document.getElementById('editButton').style.display = 'none';
+                                                    document.getElementById('updateButton').style.display = 'inline-block';
+                                                }
+                                            
+                                                function updateProfile() {
+                                                    const accessToken = localStorage.getItem('access_token');
+                                                    const refreshToken = localStorage.getItem('refresh_token');
+                                            
+                                                    if (!accessToken || !refreshToken) {
+                                                        alert('Please log in to update your profile.');
+                                                        return;
+                                                    }
+                                            
+                                                    const updatedData = {
+                                                        name: document.getElementById('profileName').value,
+                                                        email: document.getElementById('profileEmail').value,
+                                                        
+                                                    };
+                                            
+                                                    fetch('http://127.0.0.1:8000/ProfileView/', {
+                                                        method: 'PATCH',  // or 'PATCH' depending on your backend implementation
+                                                        headers: {
+                                                            'Authorization': 'Bearer ' + accessToken,
+                                                            'Refresh-Token': refreshToken,
+                                                            'Content-Type': 'application/json'
+                                                        },
+                                                        body: JSON.stringify(updatedData)
+                                                    })
+                                                    .then(response => response.json())
+                                                    .then(data => {
+                                                        if (data.error) {
+                                                            alert(data.error);
+                                                        } else {
+                                                            alert('Profile updated successfully!');
+                                                            // Revert fields to readonly mode
+                                                            document.getElementById('profileName').readOnly = true;
+                                                            document.getElementById('profileEmail').readOnly = true;
+                                                            
+                                            
+                                                            // Show Edit button and hide Update button
+                                                            document.getElementById('editButton').style.display = 'inline-block';
+                                                            document.getElementById('updateButton').style.display = 'none';
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error updating profile:', error);
+                                                    });
+                                                }
+                                            
+                                                window.onload = fetchProfile;
 
 
 
@@ -439,10 +471,8 @@
                                                     // Redirect to login page
                                                     window.location.href = "/login";
                                                 }
-                                                
-                                                
-                                                
                                             </script>
+                                            
                                             
                                             
                                             <!--  project and team member end -->

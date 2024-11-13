@@ -34,7 +34,7 @@
               <div class="form-input-content">
                 <div class="card login-form mb-0">
                   <div class="card-body pt-5 shadow">
-                    <h4 class="text-center">Hello, Employee</h4>
+                    <h4 class="text-center">Hello, Admin</h4>
                     <div class="text-center my-5"></div>
                     <form id="loginForm">
                       <div class="form-group">
@@ -79,7 +79,7 @@
               $.ajax({
                   url: 'http://127.0.0.1:8000/AdminLoginAPIView/', // Ensure this matches your backend URL
                   type: 'POST',
-                  data: JSON.stringify({ email: email, password: password }),
+                  data: JSON.stringify({ email: email, adminpassword: password }),
                   contentType: 'application/json', // Content type of the request
                   dataType: 'json', // Expected response data type
                   success: function (response) {
@@ -93,7 +93,7 @@
                       alert('Login successful! Redirecting to your profile...');
   
                       // Redirect to the profile page
-                      window.location.href = "/AdminLogin";
+                      window.location.href = "/AdminProfile";
                   },
                   error: function (response) {
                       console.error("Login failed:", response); // Debug log for error
