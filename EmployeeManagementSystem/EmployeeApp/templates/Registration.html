@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link href="{% static 'css-hm/style.css' %}" rel="stylesheet">
+    <title>Employee Management System</title>
+    
+    <style>
+      body, html {
+        height: 100%;
+        margin: 0;
+      }
+
+      .bg {
+        background-image: url("{% static 'images/background.jpg' %}");
+        height: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      .form-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .form-group label {
+        font-weight: bold;
+      }
+
+      .form-group input {
+        border-radius: 5px;
+      }
+
+      .btn-register {
+        margin-top: 20px;
+        width: 100%;
+        font-size: 18px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="bg d-flex align-items-center justify-content-center" style="height: 100vh;">
+      <div class="col-md-6 col-lg-4 form-container">
+        <h2 class="text-center pb-3">Employee Management System</h2>
+        <h6 class="text-center pb-4">Employees can register here.</h6>
+        
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group">
+            <label for="position">Position:</label>
+            <input type="text" class="form-control" id="position" placeholder="Enter your position" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="text" class="form-control" id="password" placeholder="Enter your password" required>
+          </div>
+          <div class="form-group">
+            <label for="confirm_password">ConfirmPassword:</label>
+            <input type="text" class="form-control" id="confirm_password" placeholder="Enter your confirmpassword" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg btn-register">Register as Employee</button>
+        </form>
+      </div>
+    </div>
+
+    
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Registration Successful</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Employee registered successfully!
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const position = document.getElementById('position').value;
+            const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirmpassword').value;  // Ensure this matches the form field ID
+            
+            fetch('http://127.0.0.1:8000/AddEmployee/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    position: position,
+                    password: password,
+                    confirm_password: confirm_password
+                })
+            })
+            .then(response => response.json())  
+            .then(data => {
+                console.log('Response data:', data); // Inspect the response data
+                alert("Successfully Registered!");
+                
+                // Delay the redirect to the login page by 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/login'; // Replace '/login' with the actual login page URL if needed
+                }, 2000);  // 2 seconds delay before redirecting
+            })
+            .catch(error => {
+                console.error('Error:', error);  // Log any errors
+                alert("Something went wrong!");
+            });
+        });
+        
+        
+          
+    </script>
+  </body>
+</html>
